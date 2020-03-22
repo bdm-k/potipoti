@@ -4,7 +4,8 @@
   "description": "Once you potipoti, you will be happy!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
   },
   "license": "ISC",
   "repository": {
