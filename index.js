@@ -2,6 +2,7 @@
 
 const express = require('express');
 const line = require('@line/bot-sdk');
+const crypt = require('crypto');
 
 // create LINE SDK config from env variables
 const config = {
@@ -19,6 +20,11 @@ const app = express();
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
 app.post('/callback', line.middleware(config), (req, res) => {
+    const stirng_body = JSON.stringify(req.body); 
+    const signature = crypt.createHmac('SHA256', config.channelSecret).update(stirng_body).digest('base64');
+    if (line.validateSignature(stirng_body, config.channelSecret, signature)) {
+        res.status(403).end();
+    }
     Promise
         .all(req.body.events.map(handleEvant))
         .then((result) => res.json(result))
