@@ -26,7 +26,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
         res.status(403).end();
     }
     Promise
-        .all(req.body.events.map(handleEvant))
+        .all(req.body.events.map(handleEvent))
         .then((result) => res.json(result))
         .catch((err) => {
             console.error(err);
@@ -35,7 +35,7 @@ app.post('/callback', line.middleware(config), (req, res) => {
 });
 
 // event handler
-function handleEvant(event) {
+function handleEvent(event) {
     if (event.type !== 'message' || event.message.type !== 'text') {
         // ignore non-text-message event
         return Promise.resolve(null);
