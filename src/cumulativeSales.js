@@ -1,45 +1,44 @@
 "use strict";
-// This is to make unit instance.
-// Don't think too much, just handle unit as a plain object.
-function unit(e, l) {
-    this.time = e.time;
-    this.data = [];
+
+// initlize variable:curretobj in getCumulativeSales
+function init(e, l) {
+    let obj = {
+        time: e.time,
+        data: []
+    }
     for (let i = 0; i < l; i++) {
-        this.data.push({
+        obj.data.push({
             num: 0,
             sales: 0
         });
     }
-    this.data[e.item_id].num = e.num;
-    this.data[e.item_id].sales = e.num*e.price;
+    obj.data[e.item_id].num = e.num;
+    obj.data[e.item_id].sales = e.num*e.price;
+    return obj;
 }
 
-// method:update is what unit is all about. It helps simplyfying for-sentence in getCumulativeSales.
-unit.prototype.update = function(e) {
-    this.time = e.time;
-    this.data[e.item_id].num += e.num;
-    this.data[e.item_id].sales += e.num*e.price;
-}
-unit.prototype.minutes = function() {
-    return (new Date(this.time)).getMinutes();
-}
-
-// recieve sales.json'object, return [unit].
-// look over Pull Request for the account of unit.
+// recieve sales.json'object, return [object].
+// look over Pull Request for the account of getCumulativeSales.
 function getCumulativeSales(unprocessedobj) {
-    let items = unprocessedobj.items, sales = unprocessedobj.sales;
+    let item_length = unprocessedobj.items.length, sales = unprocessedobj.sales;
     let cumulative = [], currentobj;
+    if (sales.length === 1) {
+        return [init(sales[0], item_length)]
+    }
     for (let i = 0; i < sales.length; i++) {
         let event = sales[i]
         if (!currentobj) {
-            currentobj = new unit(event, items.length);
+            currentobj = init(event, item_length);
             continue;
         }
-        if ((new Date(event.time)).getMinutes() !== currentobj.minutes()) {
-            cumulative.push(currentobj);
+        if ((new Date(event.time)).getMinutes() !== (new Date(currentobj.time)).getMinutes()) {
+            cumulative.push(JSON.parse(JSON.stringify(currentobj)));
         }
-        currentobj.update(event);
+        currentobj.time = event.time;
+        currentobj.data[event.item_id].num += event.num;
+        currentobj.data[event.item_id].sales += event.num*event.price;
     }
+    cumulative.push(Object.assign({}, currentobj));
     return cumulative
 }
 
