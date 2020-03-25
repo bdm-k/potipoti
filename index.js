@@ -55,7 +55,15 @@ function handleEvent(event) {
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
             if(isNaN(itemid) || isNaN(num))break;
-            return sales_manager.add_sales(itemid, num);
+            return sales_manager.add_sales(itemid, num).
+                then(()=>Promise.resolve(null))
+                .catch((err)=>{
+                    console.log("updating sales data failed:", err);
+                    return client.replyMessage(event.replyToken, {
+                        type: "text",
+                        text: "送信エラー。もう一度お試しください。"
+                    });
+                });
     }
     return Promise.resolve(null);
 }
