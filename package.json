@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
-    "chart.js": "^2.9.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "googleapis": "^39.2.0",
+    "request": "^2.88.2"
   }
 }
