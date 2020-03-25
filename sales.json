@@ -1,0 +1,34 @@
+{
+    "items": [
+        {
+            "name": "neko",
+            "current_price": 10000,
+            "image_path": "nekonekoneko"
+        },
+        {
+            "name": "anti_neko",
+            "current_price": -10000,
+            "image_path": "nekonekoneko"
+        }
+    ],
+    "sales": [
+        {
+            "time": 1585050010515,
+            "item_id": 0,
+            "num": 10,
+            "price": 500
+        },
+        {
+            "time": 1585050016515,
+            "item_id": 0,
+            "num": 0,
+            "price": 1000
+        },
+        {
+            "time": 1585050310515,
+            "item_id": 0,
+            "num": 3,
+            "price": 100
+        }
+    ]
+}
