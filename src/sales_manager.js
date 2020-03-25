@@ -61,3 +61,4 @@ async function addSales(itemid, num){
     await changeJson(JSON.stringify(file), null, 4);
 }
 exports.addSales = addSales;
+exports.getJson = getJson;
