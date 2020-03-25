@@ -4,6 +4,8 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const crypt = require('crypto');
 
+const sales_manager = require("./src/sales_manager.js")
+
 // create LINE SDK config from env variables
 const config = {
     channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
@@ -44,14 +46,29 @@ function handleEvent(event) {
         return Promise.resolve(null);
     }
 
-    // create a echoing text message
-    const echo = {
-        type: 'text',
-        text: event.message.text
+    const command = event.message.text.split(' ');
+    if(command.length == 0){
+        return Promise.resolve(null);
     }
 
-    // use reply API
-    return client.replyMessage(event.replyToken, echo);
+    switch(command[0]){
+        case "ADD":
+            //ADD item_id num
+            if(command.length != 3)break;
+            const itemid = parseInt(command[1], 10);
+            const num = parseInt(command[2], 10);
+            if(isNaN(itemid) || isNaN(num))break;
+            return sales_manager.add_sales(itemid, num).
+                then(()=>Promise.resolve(null))
+                .catch((err)=>{
+                    console.log("updating sales data failed:", err);
+                    return client.replyMessage(event.replyToken, {
+                        type: "text",
+                        text: "送信エラー。もう一度お試しください。"
+                    });
+                });
+    }
+    return Promise.resolve(null);
 }
 
 // listen on port
