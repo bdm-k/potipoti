@@ -50,7 +50,7 @@ function getJson(){
  * @param {Number} itemid 売り上げた商品ID
  * @param {Number} num 売上個数
  */
-async function add_sales(itemid, num){
+async function addSales(itemid, num){
     let file = await getJson();
     file.sales.push({
         "time": Date.now(),
@@ -60,4 +60,4 @@ async function add_sales(itemid, num){
     });
     await changeJson(JSON.stringify(file), null, 4);
 }
-exports.add_sales = add_sales;
+exports.addSales = addSales;

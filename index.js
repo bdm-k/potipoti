@@ -58,7 +58,7 @@ function handleEvent(event) {
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
             if(isNaN(itemid) || isNaN(num))break;
-            return sales_manager.add_sales(itemid, num).
+            return sales_manager.addSales(itemid, num).
                 then(()=>Promise.resolve(null))
                 .catch((err)=>{
                     console.log("updating sales data failed:", err);
