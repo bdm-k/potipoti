@@ -54,7 +54,7 @@ function makeGraphData(cumulative, f) {
 }
 
 // initlizeGraphObj returns complete object for Chart constructor.
-function initlizeGraphObj(l, d, name) {
+function initlizeGraphObj(l, d, name, colors) {
     let graphObj = {
         type: 'line',
         data: {
@@ -65,8 +65,8 @@ function initlizeGraphObj(l, d, name) {
                     pointRadius: 0,
                     data: d,
                     borderWidth: 1,
-                    backgroundColor: "rgba(208,245,169)",
-                    borderColor: "rgba(88,130,140)",
+                    backgroundColor: colors[0],
+                    borderColor: colors[1],
                     lineTension: 0
                 }
             ]
@@ -136,7 +136,7 @@ var vm = new Vue({
         productNames: [],
 // NOTE: colors needs to be set Manually.
         // each element of productColors is composed of [backgroundColor, borderColor]. This is for graph.
-        productColors: [/*ALL*/["rgba(208,245,169)", "rgba(88,130,140)"]],
+        productColors: [],
         // each element of productDetails is composed of {id, sales, nums}
         productDetails: [],
         // data made by getCumulativeSales.
@@ -229,7 +229,7 @@ var vm = new Vue({
                     return accumulator + currentValue.sales
                 }, 0);
             });
-            this.myChart = new Chart(document.getElementById('myChart'), initlizeGraphObj(graphdata[0], graphdata[1], 'ALL'));
+            this.myChart = new Chart(document.getElementById('myChart'), initlizeGraphObj(graphdata[0], graphdata[1], 'ALL', this.productColors[last.data.length]));
 
             // intialize selectedProductIds
             this.selectedProductIds.push(last.data.length);
@@ -244,7 +244,14 @@ var vm = new Vue({
 setInterval(() => {
     getJson()
     .then(obj => {
-        vm.cumulative = getCumulativeSales(obj);
+        let latest = getCumulativeSales(obj);
+        let f = x => {
+            return (new Date(x[x.length - 1].time)).getMinutes();
+        }
+        if (f(vm.cumulative) === f(latest)) {
+            return Promise.resolve(null)
+        }
+        vm.cumulative = latest
         let last = vm.cumulative[vm.cumulative.length - 1];
         
         // processes about time
