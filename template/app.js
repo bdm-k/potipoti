@@ -48,7 +48,7 @@ function makeGraphData(cumulative, f) {
     for (let i = 0; i < cumulative.length; i++) {
         let d = new Date(cumulative[i].time);
         graphdata[0].push(`${d.getHours()}:${d.getMinutes()}`);
-        graphdata[1].push(putTogether(cumulative[i].data.slice(), 'sales'));
+        graphdata[1].push(f(cumulative[i].data));
     }
     return graphdata;
 }
@@ -114,11 +114,11 @@ function getJson() {
     return axios.get('https://potipoti.herokuapp.com/').then(response => response.data);
 }
 
-// arr should be a copy of the original array because putTogether uses reduce method.
+// property maker for 'ALL'.
 function putTogether(arr, type) {
     return arr.reduce((accumulator, currentValue) => {
         return accumulator + currentValue[type];
-    });
+    }, 0);
 } 
 
 
@@ -153,7 +153,7 @@ var vm = new Vue({
                 d = makeGraphData(this.cumulative, x => {
                     return x.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue.sales
-                    });
+                    }, 0);
                 })[1];
             } else {
                 d = makeGraphData(this.cumulative, x => {
@@ -169,11 +169,11 @@ var vm = new Vue({
         // recieves productId and delete its graph dataset from myChart
         deleteDataSets(productId) {
             let productName = this.productNames[productId];
-            this.myChart.data.datasets.filter(element => {
+            this.myChart.data.datasets = this.myChart.data.datasets.filter(element => {
                 return element.label !== productName
             });
             this.myChart.update();
-            this.selectedProductIds.filter(element => {
+            this.selectedProductIds = this.selectedProductIds.filter(element => {
                 return element !== productId;
             });
         },
@@ -189,6 +189,7 @@ var vm = new Vue({
     },
     // mounted method is carried out immediately after DOM tree is build.
     // initialize every Vue property, including myChart.
+
     mounted() {
         getJson()
         .then(obj => {
@@ -218,15 +219,15 @@ var vm = new Vue({
             }
             this.productDetails.push({
                 id: last.data.length,
-                sales: putTogether(last.data.slice(), 'sales'),
-                nums: putTogether(last.data.slice(), 'nums'),
+                sales: putTogether(last.data, 'sales'),
+                nums: putTogether(last.data, 'nums'),
             });
 
             // initlize myChart
             let graphdata = makeGraphData(this.cumulative, x => {
                 return x.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue.sales
-                });
+                }, 0);
             });
             this.myChart = new Chart(document.getElementById('myChart'), initlizeGraphObj(graphdata[0], graphdata[1], 'ALL'));
 
@@ -252,10 +253,10 @@ setInterval(() => {
         vm.myChart.data.labels.push(`${d.getHours()}:${d.getMinutes()}`);
 
         // processes about productDetails
-        vm.productDetails.map(element => {
+        vm.productDetails = vm.productDetails.map(element => {
             if (element.id === vm.productNames.length - 1) {
-                element.sales = putTogether(last.data.slice(), 'sales');
-                element.nums = putTogether(last.data.slice(), 'nums');
+                element.sales = putTogether(last.data, 'sales');
+                element.nums = putTogether(last.data, 'nums');
             } else {
                 element.sales = last.data[element.id].sales;
                 element.nums = last.data[element.id].nums;
@@ -263,7 +264,7 @@ setInterval(() => {
         });
 
         // processes about data of myChart
-        vm.myChart.data.datasets.map(element => {
+        vm.myChart.data.datasets = vm.myChart.data.datasets.map(element => {
             let productId = vm.productNames.indexOf(element.label);
             element.data.push(vm.productDetails[productId].sales);
         });
