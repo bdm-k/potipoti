@@ -26,12 +26,17 @@ function changeJson(txt){
     
 }
 /**
- * サーバーからjsonの文字列を取得する
+ * サーバーから売上jsonのオブジェクトを取得する
  * 読み込みに失敗するとエラーが出る
  */
 function getJson(){
     return new Promise((resolve,reject)=>{
-        request.get("http://nee.php.xdomain.jp/sales.json", (err,res,body)=>{
+        options = {
+            uri: "http://nee.php.xdomain.jp/aaa.php",
+            form: {READ: "aa"},
+            json: true
+        }
+        request.post(options, (err,res,body)=>{
             if(err)reject(err);
             else resolve(body);
         })
@@ -45,8 +50,8 @@ function getJson(){
  * @param {Number} itemid 売り上げた商品ID
  * @param {Number} num 売上個数
  */
-async function add_sales(itemid, num){
-    let file = JSON.parse(await getJson());
+async function addSales(itemid, num){
+    let file = await getJson();
     file.sales.push({
         "time": Date.now(),
         "item_id": itemid,
@@ -55,4 +60,5 @@ async function add_sales(itemid, num){
     });
     await changeJson(JSON.stringify(file), null, 4);
 }
-exports.add_sales = add_sales;
+exports.addSales = addSales;
+exports.getJson = getJson;
