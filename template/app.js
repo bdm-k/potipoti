@@ -145,40 +145,47 @@ var vm = new Vue({
         myChart: null,
     },
     methods: {
+
         // receives productId and add its graph dataset to myChart.
         addDataSets(productId) {
-            if (!this.selectedProductIds.includes(productId)) {
-                let d;
-                if (this.productId === this.productNames.length - 1) {
-                    d = makeGraphData(this.cumulative, x => {
-                        return x.reduce((accumulator, currentValue) => {
-                            return accumulator + currentValue.sales
-                        });
-                    })[1];
-                } else {
-                    d = makeGraphData(this.cumulative, x => {
-                        return x[productId].sales;
-                    })[1];
-                }
-                this.myChart.data.datasets.push(makeNewDataSets(d, this.productNames[productId], this.productColors[productId]));
-                this.myChart.update();
-                // initlize 
-                this.selectedProductIds.push(productId);
+            let d;
+            if (this.productId === this.productNames.length - 1) {
+                d = makeGraphData(this.cumulative, x => {
+                    return x.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.sales
+                    });
+                })[1];
+            } else {
+                d = makeGraphData(this.cumulative, x => {
+                    return x[productId].sales;
+                })[1];
             }
+            this.myChart.data.datasets.push(makeNewDataSets(d, this.productNames[productId], this.productColors[productId]));
+            this.myChart.update();
+            // initlize 
+            this.selectedProductIds.push(productId);
         },
+
         // recieves productId and delete its graph dataset from myChart
         deleteDataSets(productId) {
+            let productName = this.productNames[productId];
+            this.myChart.data.datasets.filter(element => {
+                return element.label !== productName
+            });
+            this.myChart.update();
+            this.selectedProductIds.filter(element => {
+                return element !== productId;
+            });
+        },
+
+        // toggle functions as an interface to use addDataSets or deleteDataSets
+        toggle(productId) {
             if (this.selectedProductIds.includes(productId)) {
-                let productName = this.productNames[productId];
-                this.myChart.data.datasets.filter(element => {
-                    return element.label !== productName
-                });
-                this.myChart.update();
-                this.selectedProductIds.filter(element => {
-                    return element !== productId;
-                });
+                this.deleteDataSets(productId);
+            } else {
+                this.addDataSets(productId);
             }
-        }
+        },
     },
     // mounted method is carried out immediately after DOM tree is build.
     // initialize every Vue property, including myChart.

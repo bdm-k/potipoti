@@ -9,6 +9,12 @@
     <body>
         <div id="app">
             <canvas id="myChart"></canvas>
+            <div v-for="productDetail in productDetails" class="container">
+                <a class="name">{{ productNames[productDetail.id] }}</a>
+                <a v-on:click="toggle(productDetail.id)" class="btn">{{ selectedProductIds.includes(productDetail.id) ? 'Display' : 'Hide' }}</a>
+                <p>{{ 'Number: ' + productDetail.nums }}</p>
+                <p>{{ 'Sales: ' + productDetail.sales }}</p>
+            </div>
         </div>
         <script src="app.js"></script>
     </body>
