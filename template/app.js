@@ -8,11 +8,11 @@ function init(e, l) {
     }
     for (let i = 0; i < l; i++) {
         obj.data.push({
-            num: 0,
+            nums: 0,
             sales: 0
         });
     }
-    obj.data[e.item_id].num = e.num;
+    obj.data[e.item_id].nums = e.num;
     obj.data[e.item_id].sales = e.num*e.price;
     return obj;
 }
@@ -35,7 +35,7 @@ function getCumulativeSales(unprocessedobj) {
             cumulative.push(JSON.parse(JSON.stringify(currentobj)));
         }
         currentobj.time = event.time;
-        currentobj.data[event.item_id].num += event.num;
+        currentobj.data[event.item_id].nums += event.num;
         currentobj.data[event.item_id].sales += event.num*event.price;
     }
     cumulative.push(Object.assign({}, currentobj));
