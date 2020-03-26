@@ -64,7 +64,7 @@ function initlizeGraphObj(l, d, name, colors) {
                     label: name,
                     pointRadius: 0,
                     data: d,
-                    borderWidth: 1,
+                    borderWidth: 3,
                     backgroundColor: colors[0],
                     borderColor: colors[1],
                     lineTension: 0
@@ -74,21 +74,28 @@ function initlizeGraphObj(l, d, name, colors) {
         options: {
             responsive: true,
             scales: {
-                    xAxes: [{
+                xAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'time'
-                },
-                ticks: {
-                    maxTicksLimit: 6
-                }
+                        labelString: 'Time'
+                    },
+                    ticks: {
+                        maxTicksLimit: 7
+                    }
                 }],
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'sales'
+                        labelString: 'Sales'
+                    },
+                    ticks: {
+                        min: 0
                     }
                 }]
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
             }
         }
     };
@@ -101,7 +108,7 @@ function makeNewDataSets(d, name, colors) {
         label: name,
         pointRadius: 0,
         data: d,
-        borderWidth: 1,
+        borderWidth: 3,
         backgroundColor: colors[0],
         borderColor: colors[1],
         lineTension: 0
@@ -136,7 +143,7 @@ var vm = new Vue({
         productNames: [],
 // NOTE: colors needs to be set Manually.
         // each element of productColors is composed of [backgroundColor, borderColor]. This is for graph.
-        productColors: [],
+        productColors: [["rgba(30, 144, 255, 0.15)", "rgba(0, 128, 255, 1)"], ["rgba(143, 255, 31, 0.15)", "rgba(143, 255, 31, 1)"], ["rgba(255, 31, 143, 0.15)" ,"rgba(255, 31, 143, 1)"]],
         // each element of productDetails is composed of {id, sales, nums}
         productDetails: [],
         // data made by getCumulativeSales.
@@ -149,7 +156,7 @@ var vm = new Vue({
         // receives productId and add its graph dataset to myChart.
         addDataSets(productId) {
             let d;
-            if (this.productId === this.productNames.length - 1) {
+            if (productId === this.productNames.length - 1) {
                 d = makeGraphData(this.cumulative, x => {
                     return x.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue.sales
@@ -162,7 +169,6 @@ var vm = new Vue({
             }
             this.myChart.data.datasets.push(makeNewDataSets(d, this.productNames[productId], this.productColors[productId]));
             this.myChart.update();
-            // initlize 
             this.selectedProductIds.push(productId);
         },
 
@@ -187,9 +193,9 @@ var vm = new Vue({
             }
         },
     },
+
     // mounted method is carried out immediately after DOM tree is build.
     // initialize every Vue property, including myChart.
-
     mounted() {
         getJson()
         .then(obj => {
