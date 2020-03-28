@@ -18,7 +18,7 @@
                 <p>{{ 'Number: ' + productDetail.nums }}</p>
                 <p>{{ 'Sales: ' + productDetail.sales }}</p>
             </div>
-            <div v-for="(userid, index) in userRanking" v-if="index <= 2 && fold === false">
+            <div v-for="(userid, index) in userRanking" v-if="index <= 2 || fold === false">
                 <img v-src="users.userid.photo" alt="OOPS!">
                 <a>{{ users.userid.user_name }}</a>
                 <a>うりあげ：&nbsp;{{ users.userid.sales }}</a>
