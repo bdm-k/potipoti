@@ -50,7 +50,9 @@ function handleEvent(event) {
     if(command.length == 0){
         return Promise.resolve(null);
     }
-
+    //TODO: remove this line(for test)
+    console.log(event.source.userId);
+    
     switch(command[0]){
         case "ADD":
             //ADD item_id num
