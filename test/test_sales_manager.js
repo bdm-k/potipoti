@@ -1,5 +1,5 @@
-const sales_manager = require("../src/sales_manager.js");
+const salesManager = require("../src/salesManager.js");
 /**
  * テストとは言えないテスト
  */
-sales_manager.add_sales(0, 333);
+salesManager.addSales(0, 333);

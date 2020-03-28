@@ -4,7 +4,7 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const crypt = require('crypto');
 
-const sales_manager = require("./src/sales_manager.js")
+const salesManager = require("./src/salesManager.js")
 
 // create LINE SDK config from env variables
 const config = {
@@ -58,7 +58,7 @@ function handleEvent(event) {
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
             if(isNaN(itemid) || isNaN(num))break;
-            return sales_manager.addSales(itemid, num).
+            return salesManager.addSales(itemid, num).
                 then(()=>Promise.resolve(null))
                 .catch((err)=>{
                     console.log("updating sales data failed:", err);
