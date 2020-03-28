@@ -63,25 +63,33 @@ function setCumulative (vueInstance, sales) {
     let numOfItems = vueInstance.productNames.length;
     let cumulative = []
     let currentobj = initCurrentobj(sales[0], numOfItems);
-    let pack = (gap, event) => {
+
+    let pack = (gap, event, times) => {
         if (gap === 0) {
             let {item_id ,num, price} = event;
+            currentobj.data[item_id].nums += num;
+            currentobj.data[item_id].sales += num*price;
+        } else if (times >= 90) {
+            let {time, item_id, num, price} = event;
+            currentobj.time = time;
             currentobj.data[item_id].nums += num;
             currentobj.data[item_id].sales += num*price;
         } else {
             cumulative.push(JSON.parse(JSON.stringify(currentobj)));
             currentobj.time += 60000;
-            update_pushCurrentObj(gap - 1, event);
+            pack(gap - 1, event, times + 1);
         }
     }
+
     for (let event of sales.slice(1)) {
         let {is_uriko, num, price, user_id} = event;
         if (is_uriko) {
             vueInstance.users[user_id].sales += num*price;
         }
         let gap = gapOfMinutues(event.time, currentobj.time);
-        pack(gap, event);
+        pack(gap, event, 0);
     }
+    
     cumulative.push(JSON.parse(JSON.stringify(currentobj)));
     vueInstance.cumulative = cumulative;
 }
