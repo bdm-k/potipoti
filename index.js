@@ -39,6 +39,15 @@ app.post('/callback', line.middleware(config), (req, res) => {
         });
 });
 
+app.get('/', (req, res) => {
+    sales_manager.getJson()
+    .then(result => res.json(result))
+    .catch(err => {
+        console.error(err);
+        res.status(500).send(err);
+    });
+});
+
 // event handler
 function handleEvent(event) {
     if (event.type !== 'message' || event.message.type !== 'text') {

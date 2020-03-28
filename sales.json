@@ -11,24 +11,37 @@
             "image_path": "nekonekoneko"
         }
     ],
+    "users": {
+        "nekonekoid": {
+            "user_name": "NEKONEKO",
+            "photo": "https://obs.line-apps.com/...",
+            "sales": 0
+        }
+    },
     "sales": [
         {
             "time": 1585050010515,
             "item_id": 0,
             "num": 10,
-            "price": 500
+            "price": 500,
+            "user_id": "nekonekoid",
+            "is_uriko": true
         },
         {
             "time": 1585050016515,
             "item_id": 0,
             "num": 0,
-            "price": 1000
+            "price": 1000,
+            "user_id": "nekonekoid",
+            "is_uriko": false
         },
         {
             "time": 1585050310515,
             "item_id": 0,
             "num": 3,
-            "price": 100
+            "price": 100,
+            "user_id": "nekonekoid",
+            "is_uriko": true
         }
     ]
 }
