@@ -262,7 +262,10 @@ var vm = new Vue({
         users: {},
 
         // user id will be set in deceding order about their sales.
-        userRanking: []
+        userRanking: [],
+
+        // only top3 URIKOs are shown -> true, all URIKOs are shown -> ture
+        fold: true
     },
     methods: {
 
@@ -305,6 +308,10 @@ var vm = new Vue({
                 this.addDataSets(productId);
             }
         },
+
+        toggleFold() {
+            this.fold = !this.fold;
+        }
     },
 
     // mounted method is carried out immediately after DOM tree is build.
