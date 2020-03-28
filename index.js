@@ -5,6 +5,7 @@ const line = require('@line/bot-sdk');
 const crypt = require('crypto');
 
 const salesManager = require("./src/salesManager.js")
+const userInfo = require("./src/userInformation.js")
 
 // create LINE SDK config from env variables
 const config = {
@@ -50,6 +51,8 @@ function handleEvent(event) {
     if(command.length == 0){
         return Promise.resolve(null);
     }
+    
+    userInfo.registerUserData(event.source.userId);
 
     switch(command[0]){
         case "ADD":
