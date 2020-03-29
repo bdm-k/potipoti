@@ -6,12 +6,16 @@ const request = require("request");
 // On URIKO mode(index: 0) or Off URIKO mode(index: 1)
 const richMenuIds = [];
 
-function isURIKO(id) {
-    return id === richMenuIds[0]
+const MODE_ON = 0;
+const MODE_OFF = 1;
+
+function isURIKO(client, userid) {
+    return client.getRichMenuIdOfUser(userid)
+            .then((menuid)=>menuid === richMenuIds[MODE_ON]);
 }
 
 function anotherId(id) {
-    return (id === richMenuIds[0]) ? richMenuIds[1] : richMenuIds[0];
+    return (id === richMenuIds[MODE_ON]) ? richMenuIds[MODE_OFF] : richMenuIds[MODE_ON];
 }
 
     /*
@@ -21,7 +25,7 @@ function ToggleRichMenuId(client, userId) {
     return client.getRichMenuIdOfUser(userId)
         .then(richMenuId => {
             client.linkRichMenuToUser(anotherId(richMenuId), userId);
-            return isURIKO(richMenuId);
+            return richMenuId === richMenuIds[MODE_ON];
         })
 }
 
@@ -66,9 +70,6 @@ async function registerUserData(userid){
             user_name: userData.displayName,
             photo: userData.pictureUrl
         };
-        console.log(userData);
-        console.log(database.users);
-        console.log(process.env.CHANNEL_ACCESS_TOKEN);
     
         
     }catch(err){
@@ -85,3 +86,4 @@ async function registerUserData(userid){
 exports.ToggleRichMenuId = ToggleRichMenuId;
 exports.registerUserData = registerUserData;
 exports.getUserData = getUserData;
+exports.isURIKO = isURIKO;
