@@ -47,8 +47,10 @@ async function getUserData(userid){
  * jsonの読み書きに失敗した場合エラーを送出する
  * ユーザ情報の取得に失敗した場合ダミーの情報を返す(LINEのバージョンが古い場合取得に失敗するため)
  */
-async function registerUserData(userid){
+async function registerUserData(client, userid){
     let database = await jsonManager.getJson();
+
+    const isUriko = await isURIKO(client, userid);
 
     options = {
         uri: `https://api.line.me/v2/bot/profile/${userid}`,
@@ -68,7 +70,8 @@ async function registerUserData(userid){
         });
         database.users[userid] = {
             user_name: userData.displayName,
-            photo: userData.pictureUrl
+            photo: userData.pictureUrl,
+            currently_is_uriko: isUriko
         };
     
         
@@ -76,7 +79,8 @@ async function registerUserData(userid){
         console.error(`Userdata registration failed(userid: ${userid}):`, err);
         database.users[userid] = {
             user_name: "Unknown",
-            photo: ""
+            photo: "",
+            currently_is_uriko: isUriko
         };
     }finally{
         await jsonManager.changeJson(JSON.stringify(database, null, 4));
