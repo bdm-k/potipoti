@@ -14,19 +14,9 @@ function isURIKO(client, userid) {
             .then((menuid)=>menuid === richMenuIds[MODE_ON]);
 }
 
-function anotherId(id) {
-    return (id === richMenuIds[MODE_ON]) ? richMenuIds[MODE_OFF] : richMenuIds[MODE_ON];
-}
-
-    /*
-NOTE: ToggleRichMenuId doesn't have error handling process .catch.
-    */
-function ToggleRichMenuId(client, userId) {
-    return client.getRichMenuIdOfUser(userId)
-        .then(richMenuId => {
-            client.linkRichMenuToUser(anotherId(richMenuId), userId);
-            return richMenuId === richMenuIds[MODE_ON];
-        })
+function ToggleRichMenuId(client, userId, index) {
+    let another = (index === MODE_ON) ? MODE_OFF : MODE_ON;
+    client.linkRichMenuToUser(richMenuIds[another], userId);
 }
 
 /**
