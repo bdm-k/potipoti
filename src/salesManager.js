@@ -5,14 +5,18 @@ const jsonManager = require("./jsonManager.js");
  * 読み書きに失敗するとエラーが出る
  * @param {Number} itemid 売り上げた商品ID
  * @param {Number} num 売上個数
+ * @param {String} userid 売り子のLINEUserID
+ * @param {object} client LINE SDK のclient
  */
-async function addSales(itemid, num){
+async function addSales(itemid, num, userid){
     let file = await jsonManager.getJson();
     file.sales.push({
         "time": Date.now(),
         "item_id": itemid,
         "num": num,
-        "price": file.items[itemid].current_price
+        "price": file.items[itemid].current_price,
+        "user_id": userid,
+        "is_uriko": file.users[userid].currently_is_uriko
     });
     await jsonManager.changeJson(JSON.stringify(file, null, 4));
 }

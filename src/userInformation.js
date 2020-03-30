@@ -6,8 +6,16 @@ const request = require("request");
 // On URIKO mode(index: 0) or Off URIKO mode(index: 1)
 const richMenuIds = [];
 
+const MODE_ON = 0;
+const MODE_OFF = 1;
+
+function isURIKO(client, userid) {
+    return client.getRichMenuIdOfUser(userid)
+            .then((menuid)=>menuid === richMenuIds[MODE_ON]);
+}
+
 function ToggleRichMenuId(client, userId, index) {
-    let another = (index === 0) ? 1 : 0
+    let another = (index === MODE_ON) ? MODE_OFF : MODE_ON;
     client.linkRichMenuToUser(richMenuIds[another], userId);
 }
 
@@ -29,8 +37,10 @@ async function getUserData(userid){
  * jsonの読み書きに失敗した場合エラーを送出する
  * ユーザ情報の取得に失敗した場合ダミーの情報を返す(LINEのバージョンが古い場合取得に失敗するため)
  */
-async function registerUserData(userid){
+async function registerUserData(client, userid){
     let database = await jsonManager.getJson();
+
+    const isUriko = await isURIKO(client, userid);
 
     options = {
         uri: `https://api.line.me/v2/bot/profile/${userid}`,
@@ -50,18 +60,17 @@ async function registerUserData(userid){
         });
         database.users[userid] = {
             user_name: userData.displayName,
-            photo: userData.pictureUrl
+            photo: userData.pictureUrl,
+            currently_is_uriko: isUriko
         };
-        console.log(userData);
-        console.log(database.users);
-        console.log(process.env.CHANNEL_ACCESS_TOKEN);
     
         
     }catch(err){
         console.error(`Userdata registration failed(userid: ${userid}):`, err);
         database.users[userid] = {
             user_name: "Unknown",
-            photo: ""
+            photo: "",
+            currently_is_uriko: isUriko
         };
     }finally{
         await jsonManager.changeJson(JSON.stringify(database, null, 4));
@@ -71,3 +80,4 @@ async function registerUserData(userid){
 exports.ToggleRichMenuId = ToggleRichMenuId;
 exports.registerUserData = registerUserData;
 exports.getUserData = getUserData;
+exports.isURIKO = isURIKO;

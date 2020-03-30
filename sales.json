@@ -14,7 +14,8 @@
     "users": {
         "nekonekoid": {
             "user_name": "NEKONEKO",
-            "photo": "https://obs.line-apps.com/..."
+            "photo": "https://obs.line-apps.com/...",
+            "currently_is_uriko": true
         }
     },
     "sales": [
