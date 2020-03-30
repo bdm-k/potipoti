@@ -41,27 +41,30 @@ app.post('/callback', line.middleware(config), (req, res) => {
 });
 
 // event handler
-function handleEvent(event) {
-    if (event.type !== 'message' || event.message.type !== 'text') {
-        // ignore non-text-message event
+async function handleEvent(event) {
+    const event = await shapeEvent(evnet);
+    if (event === 'no data') {
         return Promise.resolve(null);
     }
-
-    const command = event.message.text.split(' ');
-    if(command.length == 0){
-        return Promise.resolve(null);
-    }
+// the picture of event
+// {
+//     id: userId,
+//     data: [] <- command sequence
+// }
+    const command = evnet.data;
+    const userId = event.userId;
+    const mode = parseInt(event.data[event.data.length - 1], 10);
     
-    userInfo.registerUserData(client, event.source.userId);
+    userInfo.registerUserData(client, userId);
 
     switch(command[0]){
         case "ADD":
-            //ADD item_id num
-            if(command.length != 3)break;
+            // ADD item_id num
+            // if(command.length != 3)break;
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
             if(isNaN(itemid) || isNaN(num))break;
-            return salesManager.addSales(itemid, num, event.source.userId).
+            return salesManager.addSales(itemid, num, userId).
                 then(()=>Promise.resolve(null))
                 .catch((err)=>{
                     console.log("updating sales data failed:", err);
@@ -70,8 +73,43 @@ function handleEvent(event) {
                         text: "送信エラー。もう一度お試しください。"
                     });
                 });
+
+        case 'cm':
+            // change uriko mode
+            userInfo.ToggleRichMenuId(client, userId, mode);
     }
+    
     return Promise.resolve(null);
+}
+
+async function shapeEvent(event) {
+    if (event.type === 'postback') {
+        return Promise.resolve({
+            id: event.source.userId,
+            data: event.postback.data.split(' ')
+        });
+    } 
+    if (event.type === 'message' && event.message.type === 'text') {
+        let command = event.message.text.split(' ');
+        if (command.length === 3) {
+            const MODE_ON = 0;
+            const MODE_OFF = 1;
+            const userId = event.source.userId;
+            let isUriko = await userInfo.isURIKO(userId);
+            let urikoState = (isUriko) ? MODE_ON : MODE_OFF;
+            command.push(`${urikoState}`);
+            return Promise.resolve({
+                id: userId,
+                data: command
+            });
+        } else if (command.length === 4) {
+            return Promise.resolve({
+                id: event.source.userId,
+                data: command
+            });
+        }
+    }
+    return Promise.resolve('no data');
 }
 
 // listen on port

@@ -14,8 +14,8 @@ function isURIKO(client, userid) {
             .then((menuid)=>menuid === richMenuIds[MODE_ON]);
 }
 
-function ToggleRichMenuId(client, userId, index) {
-    let another = (index === MODE_ON) ? MODE_OFF : MODE_ON;
+function ToggleRichMenuId(client, userId, mode) {
+    let another = (mode === MODE_ON) ? MODE_OFF : MODE_ON;
     client.linkRichMenuToUser(richMenuIds[another], userId);
 }
 
