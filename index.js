@@ -46,6 +46,7 @@ async function handleEvent(event) {
     if (event === 'no data') {
         return null;
     }
+
 // the picture of event
 // {
 //     id: userId,
