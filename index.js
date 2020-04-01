@@ -42,9 +42,9 @@ app.post('/callback', line.middleware(config), (req, res) => {
 
 // event handler
 async function handleEvent(event) {
-    const event = await shapeEvent(evnet);
+    event = await shapeEvent(event);
     if (event === 'no data') {
-        return Promise.resolve(null);
+        return null;
     }
 // the picture of event
 // {
@@ -55,17 +55,23 @@ async function handleEvent(event) {
     const userId = event.userId;
     const mode = parseInt(event.data[event.data.length - 1], 10);
     
-    userInfo.registerUserData(client, userId);
+    userInfo.registerUserData(userId, mode);
 
     switch(command[0]){
         case "ADD":
-            // ADD item_id num
-            // if(command.length != 3)break;
+            // ADD item_id num uriko_state
+            if(command.length != 4){
+                console.log(`The length of command ADD should be 4: ${command}`);
+                break;
+            }
+            if(isNaN(itemid) || isNaN(num)){
+                console.log(`Given value is not Integer: ${command}`);
+                break;
+            }
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
-            if(isNaN(itemid) || isNaN(num))break;
-            return salesManager.addSales(itemid, num, userId).
-                then(()=>Promise.resolve(null))
+            return await salesManager.addSales(itemid, num, userId)
+                .then(()=>Promise.resolve(null))
                 .catch((err)=>{
                     console.log("updating sales data failed:", err);
                     return client.replyMessage(event.replyToken, {
@@ -79,7 +85,7 @@ async function handleEvent(event) {
             userInfo.ToggleRichMenuId(client, userId, mode);
     }
     
-    return Promise.resolve(null);
+    return null;
 }
 
 async function shapeEvent(event) {
@@ -92,11 +98,9 @@ async function shapeEvent(event) {
     if (event.type === 'message' && event.message.type === 'text') {
         let command = event.message.text.split(' ');
         if (command.length === 3) {
-            const MODE_ON = 0;
-            const MODE_OFF = 1;
             const userId = event.source.userId;
-            let isUriko = await userInfo.isURIKO(userId);
-            let urikoState = (isUriko) ? MODE_ON : MODE_OFF;
+            let isUriko = await userInfo.isURIKO(client, userId);
+            let urikoState = (isUriko) ? userInfo.MODE_ON : userInfo.MODE_OFF;
             command.push(`${urikoState}`);
             return Promise.resolve({
                 id: userId,
