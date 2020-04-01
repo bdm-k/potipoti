@@ -37,10 +37,10 @@ async function getUserData(userid){
  * jsonの読み書きに失敗した場合エラーを送出する
  * ユーザ情報の取得に失敗した場合ダミーの情報を返す(LINEのバージョンが古い場合取得に失敗するため)
  */
-async function registerUserData(client, userid){
+async function registerUserData(userid, urikoState){
     let database = await jsonManager.getJson();
 
-    const isUriko = await isURIKO(client, userid);
+    const isUriko = urikoState == MODE_ON;
 
     options = {
         uri: `https://api.line.me/v2/bot/profile/${userid}`,
@@ -81,3 +81,5 @@ exports.ToggleRichMenuId = ToggleRichMenuId;
 exports.registerUserData = registerUserData;
 exports.getUserData = getUserData;
 exports.isURIKO = isURIKO;
+exports.MODE_OFF = MODE_OFF;
+exports.MODE_ON = MODE_ON;
