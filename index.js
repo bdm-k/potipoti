@@ -42,9 +42,9 @@ app.post('/callback', line.middleware(config), (req, res) => {
 
 // event handler
 async function handleEvent(event) {
-    const event = await shapeEvent(evnet);
+    event = await shapeEvent(event);
     if (event === 'no data') {
-        return Promise.resolve(null);
+        return null;
     }
 // the picture of event
 // {
@@ -63,9 +63,8 @@ async function handleEvent(event) {
             // if(command.length != 3)break;
             const itemid = parseInt(command[1], 10);
             const num = parseInt(command[2], 10);
-            if(isNaN(itemid) || isNaN(num))break;
-            return salesManager.addSales(itemid, num, userId).
-                then(()=>Promise.resolve(null))
+            return await salesManager.addSales(itemid, num, userId)
+                .then(()=>Promise.resolve(null))
                 .catch((err)=>{
                     console.log("updating sales data failed:", err);
                     return client.replyMessage(event.replyToken, {
@@ -79,7 +78,7 @@ async function handleEvent(event) {
             userInfo.ToggleRichMenuId(client, userId, mode);
     }
     
-    return Promise.resolve(null);
+    return null;
 }
 
 async function shapeEvent(event) {
