@@ -59,7 +59,7 @@ const uriko = {
         action: {
             type: 'postback',
             // the last 0 means "I'm uriko now, but going to be non-uriko"
-            data: 'cm 0'
+            data: 'change_uriko_mode 0'
         }
       },
 
@@ -127,7 +127,7 @@ const non_uriko = {
         action: {
             type: 'postback',
             // the last 1 means "I'm not uriko now, but going to be uriko."
-            data: 'cm 1'
+            data: 'change_uriko_mode 1'
         }
       },
 
