@@ -4,8 +4,9 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const crypt = require('crypto');
 
-const salesManager = require("./src/salesManager.js")
-const userInfo = require("./src/userInformation.js")
+const salesManager = require("./src/salesManager.js");
+const userInfo = require("./src/userInformation.js");
+const currentPriceManager = require('./src/currentPriceManager');
 
 // create LINE SDK config from env variables
 const config = {
@@ -19,6 +20,12 @@ const client = new line.Client(config);
 // create Express app
 // about Express itself: https://expressjs.com/
 const app = express();
+
+// generally only one element will be set in standby.
+// the picture of an element in standby ↓
+// [id, selected_item]
+// selected_item is initlized as null 
+let standby = [];
 
 // set template folder in app
 app.use('/static', express.static('template'));
@@ -81,9 +88,34 @@ async function handleEvent(event) {
                     });
                 });
 
-        case 'cm':
-            // change uriko mode
+        case 'change_uriko_mode':
             userInfo.ToggleRichMenuId(client, userId, mode);
+
+        case 'change_current_price':
+            currentPriceManager.buttonTemplateMaker()
+                .then(x => {
+                    standby.push([userId, null]);
+                    return client.replyMessage(event.replyToken, x);
+                })
+                .catch(err => {
+                    console.log('making a template message failed: \r\n', err);
+                    return client.replyMessage(event.replyToken, {
+                        type: "text",
+                        text: "予期しないエラーが発生\n猫派または国駿にお問い合わせください"
+                    });
+                });
+
+        case 'select_item':
+            let itemId = parseInt(command[1], 10);
+            for (let user of standby) {
+                if (user[0] === userId) {
+                    user[1] = itemId;
+                }
+            };
+            return client.replyMessage(event.replyToken, {
+                type: "text",
+                text: "新しく設定する価格を半角数字で入力してください"
+            });
     }
     
     return null;
@@ -111,6 +143,11 @@ async function shapeEvent(event) {
             return Promise.resolve({
                 id: event.source.userId,
                 data: command
+            });
+        } else if (command.length === 1 && parseInt(command[0]) !== NaN) {
+            return Promise.resolve({
+                id: event.source.userId,
+                data: ['probably_new_price', command[0]]
             });
         }
     }
